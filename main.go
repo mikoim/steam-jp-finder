@@ -4,11 +4,11 @@ package main
 import (
 	"net/http"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/unrolled/render"
 	"github.com/yohcop/openid-go"
-	log "github.com/Sirupsen/logrus"
 )
 
 const (
