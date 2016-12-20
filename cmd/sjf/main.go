@@ -14,8 +14,12 @@ func init() {
 }
 
 func main() {
+	// Redis
+	redis := newPool("localhost:6379")
+	defer redis.Close()
+
 	// App
-	a, err := newApp(newPool("localhost:6379"), []byte("REPLACE BY YOUR STRONG KEY"))
+	a, err := newApp(redis, []byte("REPLACE BY YOUR STRONG KEY"))
 	if err != nil {
 		log.Fatal(err)
 		return
