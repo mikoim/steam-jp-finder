@@ -1,0 +1,12 @@
+package: github.com/mikoim/steam-jp-finder
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/garyburd/redigo
+  subpackages:
+  - redis
+- package: github.com/getbread/redistore
+- package: github.com/gorilla/mux
+- package: github.com/gorilla/sessions
+- package: github.com/parnurzeal/gorequest
+- package: github.com/unrolled/render
+- package: github.com/yohcop/openid-go

@@ -1,0 +1,39 @@
+hash: b9faf8788e91ff5dedb82b9af80102c57482d118423cb5d10cea853f50848a6a
+updated: 2016-12-21T02:37:28.792459901+09:00
+imports:
+- name: github.com/garyburd/redigo
+  version: f8c71fc158ba13d50a7f5d8f10ea18ec49463c73
+  subpackages:
+  - internal
+  - redis
+- name: github.com/getbread/redistore
+  version: f34a02a9501d3cfa515729da4d45ce197f67b099
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/mux
+  version: 757bef944d0f21880861c2dd9c871ca543023cba
+- name: github.com/gorilla/securecookie
+  version: fa5329f913702981df43dcb2a380bac429c810b5
+- name: github.com/gorilla/sessions
+  version: 52389059572b4736b2b7d899b0242ecc449c8779
+- name: github.com/moul/http2curl
+  version: b1479103caacaa39319f75e7f57fc545287fca0d
+- name: github.com/parnurzeal/gorequest
+  version: 2aea80ce763523ecc6452e61c3727ae9595a5809
+- name: github.com/Sirupsen/logrus
+  version: 881bee4e20a5d11a6a88a5667c6f292072ac1963
+- name: github.com/unrolled/render
+  version: 526faf80cd4b305bb8134abea8d20d5ced74faa6
+- name: github.com/yohcop/openid-go
+  version: 2c050d2dae5345c417db301f11fda6fbf5ad0f0a
+- name: golang.org/x/net
+  version: 075e191f18186a8ff2becaf64478e30f4545cdad
+  subpackages:
+  - html
+  - html/atom
+  - publicsuffix
+- name: golang.org/x/sys
+  version: d75a52659825e75fff6158388dddc6a5b04f9ba5
+  subpackages:
+  - unix
+testImports: []
