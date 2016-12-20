@@ -22,11 +22,11 @@ func URI(r *http.Request) string {
 	return RootURI(r) + r.RequestURI
 }
 
-// SteamId extracts Steam ID from OpenID URI.
-func SteamId(uri string) (uint64, error) {
-	p := strings.Split(uri, "/")
+// SteamId extracts Steam ID from OpenID ID.
+func SteamId(id string) (uint64, error) {
+	p := strings.Split(id, "/")
 	if len(p) != 6 {
-		return 0, fmt.Errorf("SteamId: invalid uri %q", uri)
+		return 0, fmt.Errorf("SteamId: invalid id %q", id)
 	}
 	return strconv.ParseUint(p[5], 10, 64)
 }
