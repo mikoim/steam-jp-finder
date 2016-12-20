@@ -6,68 +6,26 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/mikoim/steam-jp-finder"
-	"github.com/unrolled/render"
-	"github.com/yohcop/openid-go"
-)
-
-const (
-	openidURL   = "https://steamcommunity.com/openid"
-	sessionName = "louise"
-)
-
-var (
-	rdr            *render.Render
-	store          sessions.Store
-	nonceStore     openid.NonceStore
-	discoveryCache openid.DiscoveryCache
 )
 
 func init() {
-	store = sessions.NewCookieStore([]byte("REPLACE BY YOUR STRONG KEY"))
-	nonceStore = openid.NewSimpleNonceStore()
-	discoveryCache = openid.NewSimpleDiscoveryCache()
-
 	log.SetLevel(log.DebugLevel)
 }
 
-func myHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, sessionName)
-	session.Values["foo"] = "bar"
-	session.Values[42] = 43
-
-	session.Save(r, w)
-
-	w.Write([]byte("MyHandler"))
-}
-
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if url, err := openid.RedirectURL(openidURL, sjf.RootURI(r)+"/login/callback", sjf.RootURI(r)); err == nil {
-		http.Redirect(w, r, url, 303)
-	} else {
-		log.Print(err)
-	}
-}
-
-func loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := openid.Verify(sjf.URI(r), discoveryCache, nonceStore)
-	if err == nil {
-		log.Println(id)
-	} else {
-		log.Println(err)
-	}
-}
-
 func main() {
-	// Render
-	rdr = render.New()
+	// App
+	a, err := newApp(newPool("localhost:6379"), []byte("REPLACE BY YOUR STRONG KEY"))
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	// Routing
 	r := mux.NewRouter()
-	r.HandleFunc("/login", loginHandler)
-	r.HandleFunc("/login/callback", loginCallbackHandler)
-	r.HandleFunc("/set", myHandler)
+	r.HandleFunc("/login", a.loginHandler)
+	r.HandleFunc("/login/callback", a.loginCallbackHandler)
+	r.HandleFunc("/set", a.myHandler)
 
 	// Logging
 	h := sjf.Logging(r)
