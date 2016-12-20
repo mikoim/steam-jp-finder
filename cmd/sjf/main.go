@@ -4,13 +4,13 @@ package main
 import (
 	"net/http"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/mikoim/steam-jp-finder"
 )
 
 func init() {
-	log.SetLevel(log.DebugLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 }
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	// App
 	a, err := newApp(redis, []byte("REPLACE BY YOUR STRONG KEY"))
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 		return
 	}
 
@@ -34,5 +34,5 @@ func main() {
 	// Logging
 	h := sjf.Logging(r)
 
-	log.Fatal(http.ListenAndServe(":8080", h))
+	logrus.Fatal(http.ListenAndServe(":8080", h))
 }
