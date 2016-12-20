@@ -44,6 +44,31 @@ func TestURI(t *testing.T) {
 	}
 }
 
+func TestSteamId(t *testing.T) {
+	var uris = []struct {
+		in  string
+		out uint64
+		err bool
+	}{{
+		"http://steamcommunity.com/openid/id/1234567890",
+		1234567890,
+		false,
+	}, {
+		"foobar",
+		0,
+		true,
+	}}
+	for i, u := range uris {
+		o, e := SteamId(u.in)
+		if (e != nil) != u.err {
+			t.Errorf("[%d] unexpected error %q", i, e)
+		}
+		if o != u.out {
+			t.Errorf("[%d] %d does not match %d", i, o, u.out)
+		}
+	}
+}
+
 func BenchmarkRootURI(b *testing.B) {
 	dummy := &http.Request{
 		Host:       "example.com",

@@ -1,6 +1,11 @@
 package sjf
 
-import "net/http"
+import (
+	"net/http"
+	"strconv"
+	"strings"
+	"fmt"
+)
 
 // RootURI re-constructs URI without path from *http.Request.
 func RootURI(r *http.Request) string {
@@ -15,4 +20,13 @@ func RootURI(r *http.Request) string {
 // URI re-constructs URI from *http.Request.
 func URI(r *http.Request) string {
 	return RootURI(r) + r.RequestURI
+}
+
+// SteamId extracts Steam ID from OpenID URI.
+func SteamId(uri string) (uint64, error) {
+	p := strings.Split(uri, "/")
+	if len(p) != 6 {
+		return 0, fmt.Errorf("SteamId: invalid uri %q", uri)
+	}
+	return strconv.ParseUint(p[5], 10, 64)
 }
