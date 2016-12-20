@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/mikoim/steam-jp-finder"
 	"github.com/unrolled/render"
 	"github.com/yohcop/openid-go"
 )
@@ -42,7 +43,7 @@ func myHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if url, err := openid.RedirectURL(openidURL, RootURI(r)+"/login/callback", RootURI(r)); err == nil {
+	if url, err := openid.RedirectURL(openidURL, sjf.RootURI(r)+"/login/callback", sjf.RootURI(r)); err == nil {
 		http.Redirect(w, r, url, 303)
 	} else {
 		log.Print(err)
@@ -50,7 +51,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := openid.Verify(URI(r), discoveryCache, nonceStore)
+	id, err := openid.Verify(sjf.URI(r), discoveryCache, nonceStore)
 	if err == nil {
 		log.Println(id)
 	} else {
@@ -69,7 +70,7 @@ func main() {
 	r.HandleFunc("/set", myHandler)
 
 	// Logging
-	h := Logging(r)
+	h := sjf.Logging(r)
 
 	log.Fatal(http.ListenAndServe(":8080", h))
 }

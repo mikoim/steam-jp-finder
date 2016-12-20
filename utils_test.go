@@ -1,4 +1,4 @@
-package main
+package sjf
 
 import (
 	"crypto/tls"
