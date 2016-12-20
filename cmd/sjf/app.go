@@ -62,7 +62,7 @@ func (s *app) loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	steamID, err := sjf.SteamId(id)
+	steamID, err := sjf.SteamID(id)
 	if err != nil {
 		logrus.Error(err)
 		http.Redirect(w, r, sjf.RootURI(r)+"/?error=Invalid Steam ID", http.StatusSeeOther)

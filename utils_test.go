@@ -44,7 +44,7 @@ func TestURI(t *testing.T) {
 	}
 }
 
-func TestSteamId(t *testing.T) {
+func TestSteamID(t *testing.T) {
 	var uris = []struct {
 		in  string
 		out uint64
@@ -59,7 +59,7 @@ func TestSteamId(t *testing.T) {
 		true,
 	}}
 	for i, u := range uris {
-		o, e := SteamId(u.in)
+		o, e := SteamID(u.in)
 		if (e != nil) != u.err {
 			t.Errorf("[%d] unexpected error %q", i, e)
 		}
@@ -89,8 +89,8 @@ func BenchmarkURI(b *testing.B) {
 	}
 }
 
-func BenchmarkSteamId(b *testing.B) {
+func BenchmarkSteamID(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SteamId("http://steamcommunity.com/openid/id/1234567890")
+		SteamID("http://steamcommunity.com/openid/id/1234567890")
 	}
 }
