@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/getbread/redistore"
 	"github.com/gorilla/sessions"
@@ -40,29 +41,45 @@ func newApp(pool *redis.Pool, keyPairs ...[]byte) (*app, error) {
 	}, nil
 }
 
-func (s *app) myHandler(w http.ResponseWriter, r *http.Request) {
+func (s *app) indexHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := s.session.Get(r, sessionName)
-	session.Values["foo"] = "bar"
-	session.Values[42] = 43
-
-	session.Save(r, w)
-
-	w.Write([]byte("MyHandler"))
+	s.rdr.Text(w, http.StatusOK, fmt.Sprintln(session.Values["SteamID"]))
 }
 
 func (s *app) loginHandler(w http.ResponseWriter, r *http.Request) {
 	if url, err := openid.RedirectURL(openidURL, sjf.RootURI(r)+"/login/callback", sjf.RootURI(r)); err == nil {
-		http.Redirect(w, r, url, 303)
+		http.Redirect(w, r, url, http.StatusSeeOther)
 	} else {
-		log.Print(err)
+		logrus.Error(err)
 	}
 }
 
 func (s *app) loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := openid.Verify(sjf.URI(r), s.discoveryCache, s.nonceStore)
-	if err == nil {
-		log.Println(id)
-	} else {
-		log.Println(err)
+	if err != nil {
+		logrus.Error(err)
+		http.Redirect(w, r, sjf.RootURI(r)+"/?error=Login failed", http.StatusSeeOther)
+		return
 	}
+
+	steamID, err := sjf.SteamId(id)
+	if err != nil {
+		logrus.Error(err)
+		http.Redirect(w, r, sjf.RootURI(r)+"/?error=Invalid Steam ID", http.StatusSeeOther)
+		return
+	}
+
+	session, _ := s.session.Get(r, sessionName)
+	session.Values["SteamID"] = steamID
+	session.Save(r, w)
+
+	http.Redirect(w, r, sjf.RootURI(r), http.StatusSeeOther)
+}
+
+func (s *app) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := s.session.Get(r, sessionName)
+	session.Options.MaxAge = -1
+	session.Save(r, w)
+
+	http.Redirect(w, r, sjf.RootURI(r), http.StatusSeeOther)
 }

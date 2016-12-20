@@ -27,9 +27,10 @@ func main() {
 
 	// Routing
 	r := mux.NewRouter()
+	r.HandleFunc("/", a.indexHandler)
 	r.HandleFunc("/login", a.loginHandler)
 	r.HandleFunc("/login/callback", a.loginCallbackHandler)
-	r.HandleFunc("/set", a.myHandler)
+	r.HandleFunc("/logout", a.logoutHandler)
 
 	// Logging
 	h := sjf.Logging(r)
