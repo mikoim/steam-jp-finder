@@ -88,3 +88,9 @@ func BenchmarkURI(b *testing.B) {
 		URI(dummy)
 	}
 }
+
+func BenchmarkSteamId(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		SteamId("http://steamcommunity.com/openid/id/1234567890")
+	}
+}
