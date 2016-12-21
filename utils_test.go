@@ -47,15 +47,19 @@ func TestURI(t *testing.T) {
 func TestSteamID(t *testing.T) {
 	var uris = []struct {
 		in  string
-		out uint64
+		out string
 		err bool
 	}{{
 		"http://steamcommunity.com/openid/id/1234567890",
-		1234567890,
+		"1234567890",
 		false,
 	}, {
+		"http://steamcommunity.com/openid/id/hoge",
+		"",
+		true,
+	}, {
 		"foobar",
-		0,
+		"",
 		true,
 	}}
 	for i, u := range uris {
@@ -64,7 +68,7 @@ func TestSteamID(t *testing.T) {
 			t.Errorf("[%d] unexpected error %q", i, e)
 		}
 		if o != u.out {
-			t.Errorf("[%d] %d does not match %d", i, o, u.out)
+			t.Errorf("[%d] %q does not match %q", i, o, u.out)
 		}
 	}
 }

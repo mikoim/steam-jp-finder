@@ -23,10 +23,14 @@ func URI(r *http.Request) string {
 }
 
 // SteamID extracts Steam ID from OpenID ID.
-func SteamID(id string) (uint64, error) {
+func SteamID(id string) (string, error) {
 	p := strings.Split(id, "/")
 	if len(p) != 6 {
-		return 0, fmt.Errorf("invalid id %q", id)
+		return "", fmt.Errorf("invalid id %q", id)
 	}
-	return strconv.ParseUint(p[5], 10, 64)
+	s := p[5]
+	if _, err := strconv.ParseUint(p[5], 10, 64); err != nil {
+		return "", fmt.Errorf("%q is not integer", s)
+	}
+	return s, nil
 }
