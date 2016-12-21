@@ -28,6 +28,7 @@ type app struct {
 
 func newApp(pool *redis.Pool, keyPairs ...[]byte) (*app, error) {
 	session, err := redistore.NewRediStoreWithPool(pool, keyPairs...)
+	session.Options.HttpOnly = true
 	if err != nil {
 		return nil, err
 	}
