@@ -43,8 +43,19 @@ func newApp(pool *redis.Pool, keyPairs ...[]byte) (*app, error) {
 }
 
 func (s *app) indexHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := s.session.Get(r, sessionName)
-	s.rdr.Text(w, http.StatusOK, fmt.Sprintln(session.Values["SteamID"]))
+	session, err := s.session.Get(r, sessionName)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	text := ""
+	steamID := session.Values["SteamID"]
+	if steamID != nil {
+		text = steamID.(string)
+	}
+
+	s.rdr.Text(w, http.StatusOK, fmt.Sprintln(text))
 }
 
 func (s *app) loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +82,11 @@ func (s *app) loginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session, _ := s.session.Get(r, sessionName)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
 	session.Values["SteamID"] = steamID
 	session.Save(r, w)
 
