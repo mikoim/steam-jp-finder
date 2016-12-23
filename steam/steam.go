@@ -15,14 +15,16 @@ type Steam struct {
 
 // PlayerSummaries represents GetPlayerSummaries response.
 type PlayerSummaries struct {
-	Response playerSummariesResponse `json:"response"`
+	Response PlayerSummariesResponse `json:"response"`
 }
 
-type playerSummariesResponse struct {
-	Players []playerSummariesResponsePlayers `json:"players"`
+// PlayerSummariesResponse represents GetPlayerSummaries response wrapped PlayerSummary.
+type PlayerSummariesResponse struct {
+	Players []PlayerSummariesResponsePlayers `json:"players"`
 }
 
-type playerSummariesResponsePlayers struct {
+// PlayerSummariesResponsePlayers represents PlayerSummary.
+type PlayerSummariesResponsePlayers struct {
 	SteamID                  string `json:"steamid"`
 	CommunityVisibilityState int    `json:"communityvisibilitystate"`
 	ProfileState             int    `json:"profilestate"`
@@ -44,15 +46,17 @@ type playerSummariesResponsePlayers struct {
 
 // OwnedGames represents GetOwnedGames response.
 type OwnedGames struct {
-	Response ownedGamesResponse `json:"response"`
+	Response OwnedGamesResponse `json:"response"`
 }
 
-type ownedGamesResponse struct {
+// OwnedGamesResponse represents GetOwnedGames response wrapped Games.
+type OwnedGamesResponse struct {
 	GameCount int                       `json:"game_count"`
-	Games     []ownedGamesResponseGames `json:"games"`
+	Games     []OwnedGamesResponseGames `json:"games"`
 }
 
-type ownedGamesResponseGames struct {
+// OwnedGamesResponseGames represents Game.
+type OwnedGamesResponseGames struct {
 	AppID           int `json:"appid"`
 	PlaytimeForever int `json:"playtime_forever"`
 	Playtime2Weeks  int `json:"playtime_2weeks,omitempty"`

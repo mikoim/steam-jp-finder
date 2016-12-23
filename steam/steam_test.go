@@ -48,8 +48,8 @@ func TestParsePlayerSummaries(t *testing.T) {
   }
 }`),
 		&PlayerSummaries{
-			playerSummariesResponse{
-				[]playerSummariesResponsePlayers{{
+			PlayerSummariesResponse{
+				[]PlayerSummariesResponsePlayers{{
 					"76561197960435530",
 					3,
 					1,
@@ -115,9 +115,9 @@ func TestParseOwnedGames(t *testing.T) {
   }
 }`),
 		&OwnedGames{
-			ownedGamesResponse{
+			OwnedGamesResponse{
 				2,
-				[]ownedGamesResponseGames{{
+				[]OwnedGamesResponseGames{{
 					10,
 					0,
 					0,
