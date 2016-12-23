@@ -5,24 +5,13 @@ import (
 	"testing"
 )
 
-func TestNewSteam(t *testing.T) {
-	apiKey := "0123456789ABCDEF0123456789ABCDEF"
-	s := NewSteam(apiKey)
-	if s.apiKey != apiKey {
-		t.Errorf("Steam Web API key %q doesn't match %q.", s.apiKey, apiKey)
-	}
-	if s.request == nil {
-		t.Error("HTTP client is nil.")
-	}
-}
+var (
+	samplePlayerSummaries []byte
+	sampleOwnedGames []byte
+)
 
-func TestParsePlayerSummaries(t *testing.T) {
-	var summaries = []struct {
-		in  []byte
-		out *PlayerSummaries
-		err bool
-	}{{
-		[]byte(`{
+func TestMain(m *testing.M) {
+	samplePlayerSummaries = []byte(`{
   "response": {
     "players": [
       {
@@ -46,7 +35,44 @@ func TestParsePlayerSummaries(t *testing.T) {
       }
     ]
   }
-}`),
+}`)
+	sampleOwnedGames = []byte(`{
+  "response": {
+    "game_count": 2,
+    "games": [
+      {
+        "appid": 10,
+        "playtime_forever": 0
+      },
+      {
+        "appid": 20,
+        "playtime_forever": 0,
+        "playtime_2weeks": 1
+      }
+    ]
+  }
+}`)
+	m.Run()
+}
+
+func TestNewSteam(t *testing.T) {
+	apiKey := "0123456789ABCDEF0123456789ABCDEF"
+	s := NewSteam(apiKey)
+	if s.apiKey != apiKey {
+		t.Errorf("Steam Web API key %q doesn't match %q.", s.apiKey, apiKey)
+	}
+	if s.request == nil {
+		t.Error("HTTP client is nil.")
+	}
+}
+
+func TestParsePlayerSummaries(t *testing.T) {
+	var summaries = []struct {
+		in  []byte
+		out *PlayerSummaries
+		err bool
+	}{{
+		samplePlayerSummaries,
 		&PlayerSummaries{
 			PlayerSummariesResponse{
 				[]PlayerSummariesResponsePlayers{{
@@ -98,22 +124,7 @@ func TestParseOwnedGames(t *testing.T) {
 		out *OwnedGames
 		err bool
 	}{{
-		[]byte(`{
-  "response": {
-    "game_count": 2,
-    "games": [
-      {
-        "appid": 10,
-        "playtime_forever": 0
-      },
-      {
-        "appid": 20,
-        "playtime_forever": 0,
-        "playtime_2weeks": 1
-      }
-    ]
-  }
-}`),
+		sampleOwnedGames,
 		&OwnedGames{
 			OwnedGamesResponse{
 				2,
@@ -147,5 +158,17 @@ func TestParseOwnedGames(t *testing.T) {
 		if reflect.DeepEqual(o, s.out) == false {
 			t.Errorf("[%d] %v does not match %v", i, o, s.out)
 		}
+	}
+}
+
+func BenchmarkParsePlayerSummaries(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ParsePlayerSummaries(&samplePlayerSummaries)
+	}
+}
+
+func BenchmarkParseOwnedGames(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ParseOwnedGames(&sampleOwnedGames)
 	}
 }
