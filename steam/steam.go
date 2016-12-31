@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/parnurzeal/gorequest"
+	"net/url"
+	"fmt"
 )
 
 // Steam is Steam Web API client.
@@ -86,4 +88,27 @@ func ParseOwnedGames(resp *[]byte) (*OwnedGames, error) {
 		return nil, err
 	}
 	return &o, nil
+}
+
+/*
+func (s *Steam) PlayerSummaries(steamID string) (*PlayerSummaries, error) {
+	s.request.Get()
+}*/
+
+func (s *Steam) GenerateRequestURI(uri string, query map[string]string) (string, error) {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return "", fmt.Errorf("URI parsing failed: %s", uri)
+	}
+
+	q := u.Query()
+
+	for key, val := range query {
+		q.Set(key, val)
+	}
+	q.Set("key", s.apiKey)
+
+	u.RawQuery = q.Encode()
+
+	return u.String(), nil
 }

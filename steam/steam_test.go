@@ -161,6 +161,36 @@ func TestParseOwnedGames(t *testing.T) {
 	}
 }
 
+func TestSteam_GenerateRequestURI(t *testing.T) {
+	var urls = []struct{
+		baseURI string
+		query map[string]string
+		out string
+		err bool
+	}{
+		{
+			"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/",
+			map[string]string{
+			"steamid": "1",
+			"format": "json",
+			},
+			"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&key=0123456789ABCDEF&steamid=1",
+			false,
+		},
+	}
+	s := NewSteam("0123456789ABCDEF")
+
+	for i, u := range urls {
+		o, e := s.GenerateRequestURI(u.baseURI, u.query)
+		if (e != nil) != u.err {
+			t.Errorf("[%d] unexpected error %q", i, e)
+		}
+		if reflect.DeepEqual(o, u.out) == false {
+			t.Errorf("[%d] %v does not match %v", i, o, u.out)
+		}
+	}
+}
+
 func BenchmarkParsePlayerSummaries(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		ParsePlayerSummaries(&samplePlayerSummaries)
