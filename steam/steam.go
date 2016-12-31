@@ -4,9 +4,10 @@ package steam
 import (
 	"encoding/json"
 
-	"github.com/parnurzeal/gorequest"
-	"net/url"
 	"fmt"
+	"net/url"
+
+	"github.com/parnurzeal/gorequest"
 )
 
 // Steam is Steam Web API client.
@@ -90,11 +91,7 @@ func ParseOwnedGames(resp *[]byte) (*OwnedGames, error) {
 	return &o, nil
 }
 
-/*
-func (s *Steam) PlayerSummaries(steamID string) (*PlayerSummaries, error) {
-	s.request.Get()
-}*/
-
+// GenerateRequestURI returns URI added key to query for Steam API
 func (s *Steam) GenerateRequestURI(uri string, query map[string]string) (string, error) {
 	u, err := url.Parse(uri)
 	if err != nil {
