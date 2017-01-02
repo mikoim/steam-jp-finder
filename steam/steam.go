@@ -3,7 +3,6 @@ package steam
 
 import (
 	"encoding/json"
-
 	"fmt"
 	"net/url"
 
@@ -91,6 +90,42 @@ func ParseOwnedGames(resp *[]byte) (*OwnedGames, error) {
 	return &o, nil
 }
 
+// PlayerSummaries fetches PlayerSummaries from Steam
+func (s *Steam) PlayerSummaries(steamIDs string) (*PlayerSummaries, error) {
+	uri, err := s.GenerateRequestURI("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/", map[string]string{
+		"steamids": steamIDs,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, body, errs := s.request.Get(uri).End()
+	if errs != nil || resp.StatusCode != 200 {
+		return nil, fmt.Errorf("HTTP Status Code: %d / %v", errs, resp.StatusCode)
+	}
+	tmp := []byte(body)
+
+	return ParsePlayerSummaries(&tmp)
+}
+
+// OwnedGames fetches OwnedGames from Steam
+func (s *Steam) OwnedGames(steamID string) (*OwnedGames, error) {
+	uri, err := s.GenerateRequestURI("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/", map[string]string{
+		"steamid": steamID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, body, errs := s.request.Get(uri).End()
+	if errs != nil || resp.StatusCode != 200 {
+		return nil, fmt.Errorf("HTTP Status Code: %d / %v", errs, resp.StatusCode)
+	}
+	tmp := []byte(body)
+
+	return ParseOwnedGames(&tmp)
+}
+
 // GenerateRequestURI returns URI added key to query for Steam API
 func (s *Steam) GenerateRequestURI(uri string, query map[string]string) (string, error) {
 	u, err := url.Parse(uri)
@@ -99,12 +134,10 @@ func (s *Steam) GenerateRequestURI(uri string, query map[string]string) (string,
 	}
 
 	q := u.Query()
-
 	for key, val := range query {
 		q.Set(key, val)
 	}
 	q.Set("key", s.apiKey)
-
 	u.RawQuery = q.Encode()
 
 	return u.String(), nil

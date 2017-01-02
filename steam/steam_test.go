@@ -1,13 +1,16 @@
 package steam
 
 import (
+	"errors"
+	"os"
 	"reflect"
 	"testing"
 )
 
 var (
 	samplePlayerSummaries []byte
-	sampleOwnedGames []byte
+	sampleOwnedGames      []byte
+	apiKey                string
 )
 
 func TestMain(m *testing.M) {
@@ -52,6 +55,7 @@ func TestMain(m *testing.M) {
     ]
   }
 }`)
+	apiKey = os.Getenv("STEAM_API_KEY")
 	m.Run()
 }
 
@@ -162,17 +166,17 @@ func TestParseOwnedGames(t *testing.T) {
 }
 
 func TestSteam_GenerateRequestURI(t *testing.T) {
-	var urls = []struct{
+	var urls = []struct {
 		baseURI string
-		query map[string]string
-		out string
-		err bool
+		query   map[string]string
+		out     string
+		err     bool
 	}{
 		{
 			"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/",
 			map[string]string{
-			"steamid": "1",
-			"format": "json",
+				"steamid": "1",
+				"format":  "json",
 			},
 			"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&key=0123456789ABCDEF&steamid=1",
 			false,
@@ -188,6 +192,38 @@ func TestSteam_GenerateRequestURI(t *testing.T) {
 		if reflect.DeepEqual(o, u.out) == false {
 			t.Errorf("[%d] %v does not match %v", i, o, u.out)
 		}
+	}
+}
+
+func TestSteam_PlayerSummaries(t *testing.T) {
+	if apiKey == "" {
+		t.Skip("STEAM_API_KEY is not set")
+		return
+	}
+
+	s := NewSteam(apiKey)
+	p, err := s.PlayerSummaries("76561197974965663")
+	if err != nil {
+		t.Error(err)
+	}
+	if len(p.Response.Players) == 0 {
+		t.Error(errors.New("empty response"))
+	}
+}
+
+func TestSteam_OwnedGames(t *testing.T) {
+	if apiKey == "" {
+		t.Skip("STEAM_API_KEY is not set")
+		return
+	}
+
+	s := NewSteam(apiKey)
+	o, err := s.OwnedGames("76561197974965663")
+	if err != nil {
+		t.Error(err)
+	}
+	if len(o.Response.Games) == 0 {
+		t.Error(errors.New("empty response"))
 	}
 }
 
